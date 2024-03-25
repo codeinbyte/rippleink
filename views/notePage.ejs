@@ -1,0 +1,50 @@
+<%- include('./partials/header') %>
+    <header>
+      <div class="header-content">
+        <a href="/auth-homepage" class="header-left-corner"><img src="/images/icons/back-button.png"></a>
+        <a href="javascript:void(0)" class="header-save-btn" id="save-note"><img src="/images/icons/save.png"></a>
+        <button id="drawBtn" onclick="drawToggle()">Typing Mode</button>
+        <button id="eraseBtn">Pen Mode</button>
+        <form action="/user/sign-out-user" method="POST">
+          <button type="submit" class="header-btn"><img src="/images/icons/logout.png"></button>
+        </form>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <% if (typeof message !== 'undefined' && message !== '') { %>
+        <div id="popup-notification" style="display: inline-block;" onclick="this.style.display='none'">
+          <span id="popup-close-button" onclick="this.parentElement.style.display='none'">X</span>
+          <%= message %>
+        </div>
+      <% } %>
+
+      <input type="hidden" id="note_id" value="<%= note_id %>">
+      <input type="hidden" id="text_content" value="<%= text_content %>">
+      <input type="hidden" id="drawing_event" value="0">
+      <input type="text" id="note_title" placeholder="Note title ..." value="<%= title %>">
+
+      <svg id="drawing-content">
+        <% if (drawing_content) { %>
+          <%- JSON.parse(drawing_content) %>
+        <% } %>
+      </svg>
+      <textarea id="froala-editor"></textarea>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-content">
+        <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="nav-btn"><img src="/images/icons/menu.png"></div></a>
+      </div>
+    </div>
+
+  <%- include('./partials/sidebar') %>
+  <%- include('./partials/footer') %>
+  <script type="text/javascript" src="/froalajs"></script>
+  <script type="text/javascript" src="/froalajs_table"></script>
+  <script type="text/javascript" src="/froalajs_colors"></script>
+  <script type="text/javascript" src="/javascripts/notePage.js"></script>
+
+</body>
+</html>

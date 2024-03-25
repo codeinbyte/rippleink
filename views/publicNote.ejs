@@ -1,0 +1,59 @@
+<%- include('./partials/header') %>
+    <header>
+      <div class="header-content">
+        <a href="/auth-homepage" class="header-left-corner"><img src="/images/logo.png"></a>
+        <button id="drawBtn" onclick="showHideToggle()">Hide Drawing</button>
+        <button id="eraseBtn" style="display: none;">Pen Mode</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <% if (typeof message !== 'undefined' && message !== '') { %>
+        <div id="popup-notification" style="display: inline-block;" onclick="this.style.display='none'">
+          <span id="popup-close-button" onclick="this.parentElement.style.display='none'">X</span>
+          <%= message %>
+        </div>
+      <% } %>
+
+      <input type="hidden" id="note_id" value="<%= note_id %>">
+      <input type="hidden" id="text_content" value="<%= text_content %>">
+      <input type="text" id="note_title" placeholder="Note title ..." value="<%= title %>" disabled>
+
+      <svg id="drawing-content" style="padding-top: 50px;">
+        <% if (drawing_content) { %>
+          <%- JSON.parse(drawing_content) %>
+        <% } %>
+      </svg>
+      <div id="froala-editor"></div>
+    </div>
+
+  <script type="text/javascript" src="/froalajs"></script>
+  <script type="text/javascript" src="/froalajs_table"></script>
+  <script type="text/javascript" src="/froalajs_colors"></script>
+  <script>
+    // To initiate Froala text editor
+    let editor = new FroalaEditor('#froala-editor', {
+      enter: FroalaEditor.ENTER_BR,
+      tabSpaces: 4,
+      charCounterCount: false,
+      events: {
+        'initialized': function () {
+          // hide toolbar and disable editing
+          const textbox = document.querySelector('.fr-wrapper');
+          textbox.style.borderTopLeftRadius = '10px';
+          textbox.style.borderTopRightRadius = '10px';
+          textbox.style.borderTop = '1px solid #ccc';
+          this.toolbar.hide();
+          editor.edit.off();
+
+          const script = document.createElement('script');
+          script.src = '/javascripts/drawing.js';
+          document.body.appendChild(script);
+          editor.html.set(document.getElementById("text_content").value);
+        },
+      }
+    });
+  </script>
+</body>
+</html>

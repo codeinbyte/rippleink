@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RippleInk</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel="stylesheet" href="/stylesheets/popup_window.css">
+</head>
+<body>
+  <div class="credential-form-container">
+    <div class="logo-container">
+      <img src="/images/logo.png">
+    </div>
+
+    <% if (typeof message !== 'undefined' && message !== '' && message.length > 0) { %>
+      <div id="popup-notification" style="display: inline-block;" onclick="this.style.display='none'">
+        <span id="popup-close-button" onclick="this.parentElement.style.display='none'">X</span>
+        <%= message %>
+      </div>
+    <% } %>
+
+    <form action="/user/register-user" method="post">
+      <label for="fullname">Full Name:</label>
+      <input type="text" id="fullname" name="fullname" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <label for="verifyPassword">Verify Password:</label>
+      <input type="password" id="verifyPassword" name="verifyPassword" required>
+
+      <button type="submit" class="credential-btn">Register</button>
+    </form>
+
+    <div class="credential-extra-link">
+      Already have an account? <a href="/">Sign in</a>
+    </div>
+  </div>
+  <script type="text/javascript" src="/javascripts/popup_window.js"></script>
+</body>
+</html>

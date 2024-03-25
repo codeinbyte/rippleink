@@ -1,0 +1,39 @@
+<div id="chatbar">
+  <div id="chatbar-nav">
+    <a href="javascript:void(0)" onclick="toggleChatbar();"><div class="chatbar-back">Back</div></a>
+    <div class="chatbar-nav-content">
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
+  </div>
+  <a href="javascript:void(0)" onclick="toggleChatbar();"><div class="chatbar-leftover"></div></a>
+</div>
+
+<script>
+  const form = document.getElementById('form');
+  const input = document.getElementById('input');
+  const messages = document.getElementById('messages');
+
+  let chatCounter = 0;  // for unique clientOffset
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (input.value) {
+      // compute a unique offset
+      const clientOffset = `${socket.id}-chat_message-${chatCounter++}`;
+      socket.emit('chat_message', input.value, clientOffset, '<%= collab_id %>');
+      input.value = '';
+    }
+  });
+
+  let chatbarWindow = document.getElementById('chatbar');
+  socket.on('chat_message', (msg, serverOffset) => {
+    const item = document.createElement('li');
+    item.textContent = msg;
+    messages.appendChild(item);
+    chatbarWindow.scrollTo(0, chatbarWindow.scrollHeight);
+    socket.auth.serverOffset = serverOffset;
+  });
+
+</script>

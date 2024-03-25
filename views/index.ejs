@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RippleInk</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/popup_window.css">
+  </head>
+  <body>
+    <div class="credential-form-container">
+      <div class="logo-container">
+        <img src="/images/logo.png">
+      </div>
+
+      <% if (typeof message !== 'undefined' && message !== '' && message.length > 0) { %>
+        <div id="popup-notification" style="display: inline-block;" onclick="this.style.display='none'">
+          <span id="popup-close-button" onclick="this.parentElement.style.display='none'">X</span>
+          <%= message %>
+        </div>
+      <% } %>
+
+      <form action="/user/sign-in-user" method="post">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="credential-btn">Sign in</button>
+      </form>
+      <div class="credential-extra-link">
+        Don't have an account? <a href="/register">Register here</a>
+      </div>
+    </div>
+    <script type="text/javascript" src="/javascripts/popup_window.js"></script>
+  </body>
+</html>

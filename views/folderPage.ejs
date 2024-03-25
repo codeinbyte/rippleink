@@ -1,0 +1,75 @@
+<%- include('./partials/header') %>
+    <header>
+      <div class="header-content">
+        <a href="/" class="header-left-corner"><img src="/images/icons/back-button.png"></a>
+        <form action="/user/sign-out-user" method="POST">
+          <button type="submit" class="header-btn"><img src="/images/icons/logout.png"></button>
+        </form>
+      </div>
+    </header>
+    <div class="content">
+      <div id="folder-title">
+        <%= folderTitle %>
+      </div>
+      <div id="folder-content">
+        <div class="note-card">
+          <div class="note-card-title-container">
+            <div class="note-card-title">Add new notes</div>
+          </div>
+          <div class="note-card-description"
+          style="display: flex; justify-content: center; align-items: center; cursor: pointer;"
+          onclick="addNotesToFolderPopupWindow('<%= folderId %>');">
+            <img src="/images/icons/add-note.png">
+          </div>
+        </div>
+
+        <% if (typeof folderContent !== 'undefined' && folderContent && folderContent.length > 0) { %>
+          <% for (let note of folderContent) { %>
+            <% if (typeof note !== 'undefined') { %>
+              <a href="<%= (note.document_ownership == 'personal_note') ? '/note-page/' + note._id : '/collab-page/' + note._id %>">
+                <div class="note-card">
+                  <div class="note-card-title-container">
+                    <div class="note-card-title"><%= note.title %></div>
+                    <div class="note-card-title-icon"><img src="/images/icons/<%= (note.document_ownership == 'personal_note') ? 'personal-note.png' : 'collab-note.png' %>"></div>
+                  </div>
+                  <hr>
+                  <div class="note-card-description"><%= note.text_content %></div>
+                  <a
+                  href="javascript:void(0)"
+                  class="folder-floating-delete"
+                  onclick="popupConfirmation('Remove note from folder?', function() { removeNoteFromFolder('<%= folderId %>', '<%= note._id %>'); });">
+                    &#x2715;
+                  </a>
+                </div>
+              </a>
+            <% } %>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+
+    <script>
+      // Create new folder pop-up
+      const createNewFolderContent = "<label for='create-folder' style='font-size: 16px;'>Enter name for new folder:</label><br>"+
+                                    "<input type='text' id='create-folder' name='create-folder'>"+
+                                    "<div id='create-folder-button'>"+
+                                      "<a href='#' onclick=\"createNewFolder(document.getElementById('create-folder').value);\">"+
+                                        "Create Folder"+
+                                      "</a>"+
+                                    "</div>";
+      // Main page new button pop-up
+      const newButtonContent = "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createCollab();'>New Collaboration Note</a>"+
+                              "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createNote();'>New Personal Note</a>"
+    </script>
+    <div class="bottom-nav">
+      <div class="bottom-nav-content">
+        <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="nav-btn"><img src="/images/icons/menu.png"></div></a>
+        <a href="javascript:void(0)" onclick="popupMessage(newButtonContent);"><div class="nav-btn"><img src="/images/icons/addnew.png"></div></a>
+      </div>
+    </div>
+
+  <%- include('./partials/sidebar') %>
+  <%- include('./partials/footer') %>
+  <script type="text/javascript" src="/javascripts/folder.js"></script>
+</body>
+</html>

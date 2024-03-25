@@ -1,0 +1,132 @@
+<%- include('./partials/header') %>
+    <header>
+      <div class="header-content">
+        <a href="/auth-homepage" class="header-left-corner"><img src="/images/icons/back-button.png"></a>
+        <button id="drawBtn" onclick="showHideToggle()">Hide Drawing</button>
+        <button id="eraseBtn" style="display: none;">Pen Mode</button>
+        <form action="/user/sign-out-user" method="POST">
+          <button type="submit" class="header-btn"><img src="/images/icons/logout.png"></button>
+        </form>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <% if (typeof message !== 'undefined' && message !== '') { %>
+        <div id="popup-notification" style="display: inline-block;" onclick="this.style.display='none'">
+          <span id="popup-close-button" onclick="this.parentElement.style.display='none'">X</span>
+          <%= message %>
+        </div>
+      <% } %>
+
+      <input type="hidden" id="collab_id" value="<%= collab_id %>">
+      <input type="hidden" id="text_content" value="<%= text_content %>">
+      <input type="hidden" id="drawing_event" value="0">
+      <input type="text" id="collab_title" placeholder="Note title ..." value="<%= title %>" disabled>
+
+      <svg id="drawing-content" style="padding-top: 50px;">
+        <% if (drawing_content) { %>
+          <%- JSON.parse(drawing_content) %>
+        <% } %>
+      </svg>
+      <textarea id="froala-editor"></textarea>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-content">
+        <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="nav-btn"><img src="/images/icons/menu.png"></div></a>
+        <a href="javascript:void(0)" onclick="toggleChatbar();"><div class="nav-btn"><img src="/images/icons/bubble-chat.png"></div></a>
+      </div>
+    </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // initialize socket.io client side
+    var socket = io({
+      auth: {
+        serverOffset: 0
+      },
+      ackTimeout: 10000,
+      query: {
+        collabId: '<%= collab_id %>'
+      },
+    });
+
+    let roomId = document.getElementById('collab_id').value;
+
+    // Execute as soon as socket connection is established
+    socket.on("connect", function() {
+      socket.emit("joinRoom", roomId);
+    });
+  </script>
+
+  <%- include('./partials/sidebar') %>
+  <%- include('./partials/chatbar') %>
+  <%- include('./partials/footer') %>
+
+  <script type="text/javascript" src="/froalajs"></script>
+  <script type="text/javascript" src="/froalajs_table"></script>
+  <script type="text/javascript" src="/froalajs_colors"></script>
+  <script>
+    // To initiate Froala text editor
+    let editor = new FroalaEditor('#froala-editor', {
+      enter: FroalaEditor.ENTER_BR,
+      tabSpaces: 4,
+      charCounterCount: false,
+      events: {
+        'initialized': function () {
+          // hide toolbar and disable editing
+          const textbox = document.querySelector('.fr-wrapper');
+          textbox.style.borderTopLeftRadius = '10px';
+          textbox.style.borderTopRightRadius = '10px';
+          textbox.style.borderTop = '1px solid #ccc';
+          this.toolbar.hide();
+          editor.edit.off();
+
+          const script = document.createElement('script');
+          script.src = '/javascripts/drawing.js';
+          document.body.appendChild(script);
+          editor.html.set(document.getElementById("text_content").value);
+        },
+      }
+    });
+
+    // socket.io client receive message
+    socket.on('note', async (msg, serverOffset) => {
+      const textbox = document.querySelector('.fr-element.fr-view');
+      textbox.innerHTML = msg;
+      // editor.html.set(msg);
+
+      textbox.blur();
+      socket.auth.serverOffset = serverOffset;
+    });
+
+    // Event listener, update title on changes
+    const titleInput = document.getElementById('collab_title');
+    titleInput.addEventListener('input', function() {
+      editor.save.save();
+      socket.emit('title_change', titleInput.value, collabIdValue);
+    });
+
+    // socket.io client receive title change
+    socket.on('title_change', async (title, collabIdValue) => {
+      titleInput.value = title;
+    });
+
+    const svgDrawingArea = document.getElementById('drawing-content');
+    const svgDrawingEvent = document.getElementById('drawing_event');
+
+    // Event listener to send drawing through socket.io on hidden input change
+    svgDrawingEvent.addEventListener('input', function() {
+      const clientOffset = `${socket.id}-drawing-${drawingCounter++}`;
+      socket.emit('drawing', svgDrawingArea.innerHTML, clientOffset, collabIdValue);
+    });
+
+    // socket.io client receive drawing
+    socket.on('drawing', async (svgPath, serverOffset) => {
+      svgDrawingArea.innerHTML = svgPath;
+      socket.auth.serverOffset = serverOffset;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<%- include('./partials/header') %>
+    <header>
+      <div class="header-content">
+        <a href="/" class="header-left-corner"><img src="/images/logo.png"></a>
+        <form action="/user/sign-out-user" method="POST">
+          <button type="submit" class="header-btn"><img src="/images/icons/logout.png"></button>
+        </form>
+      </div>
+    </header>
+    <div class="content">
+      <div id="recent-notes-title">
+        Recent Notes
+      </div>
+
+      <div id="recent-notes-content">
+        <% if (typeof recentNotes !== 'undefined' && recentNotes && recentNotes.length > 0) { %>
+          <% for (let note of recentNotes) { %>
+            <% if (typeof note !== 'undefined') { %>
+              <a href="<%= (note.document_ownership == 'personal_note') ? '/note-page/' + note._id : '/collab-page/' + note._id %>">
+                <div class="note-card">
+                  <div class="note-card-title-container">
+                    <div class="note-card-title"><%= note.title %></div>
+                    <div class="note-card-title-icon"><img src="/images/icons/<%= (note.document_ownership == 'personal_note') ? 'personal-note.png' : 'collab-note.png' %>"></div>
+                  </div>
+                  <hr>
+                  <div class="note-card-description"><%= note.text_content %></div>
+                </div>
+              </a>
+            <% } %>
+          <% } %>
+        <% } else { %>
+          You have no recent notes.
+        <% } %>
+      </div>
+      <div id="folder-title">
+        Folders
+      </div>
+      <div id="folder-content">
+        <div class="note-card">
+          <div class="note-card-title-container">
+            <div class="note-card-title">Add new folder</div>
+          </div>
+          <div class="note-card-description"
+          style="display: flex; justify-content: center; align-items: center; cursor: pointer;"
+          onclick="popupMessage(createNewFolderContent);">
+            <img src="/images/icons/add-folder.png">
+          </div>
+        </div>
+
+        <% if (typeof userFolders !== 'undefined' && userFolders && userFolders.length > 0) { %>
+          <% for (let folder of userFolders) { %>
+            <% if (typeof folder !== 'undefined') { %>
+              <a href="/folder-page/<%= folder._id %>">
+                <div class="note-card">
+                  <div class="note-card-title-container">
+                    <div class="note-card-title"><img src="/images/icons/folder.png" style="height: 28px;"></div>
+                    <a href="javascript:void(0)"
+                    class="note-card-title-icon"
+                    onclick="popupConfirmation('Remove folder?', function() { deleteFolder('<%= folder._id %>'); });"
+                    >
+                      <div style="font-size: 24px; color: #333; margin-top: -2px; margin-right: 2px;">&#x2715;</div>
+                    </a>
+                  </div>
+                  <hr>
+                  <a href="/folder-page/<%= folder._id %>" class="note-card-title-icon">
+                    <div
+                    class="note-card-description"
+                    style="font-weight: 600; margin-top: 20px; font-size: 16px;">
+                      <%= folder.name %>
+                    </div>
+                  </a>
+                </div>
+              </a>
+            <% } %>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+
+    <script>
+      // Create new folder pop-up
+      const createNewFolderContent = "<label for='create-folder' style='font-size: 16px;'>Enter name for new folder:</label><br>"+
+                                    "<input type='text' id='create-folder' name='create-folder'>"+
+                                    "<div id='create-folder-button'>"+
+                                      "<a href='#' onclick=\"createNewFolder(document.getElementById('create-folder').value);\">"+
+                                        "Create Folder"+
+                                      "</a>"+
+                                    "</div>";
+      // Main page new button pop-up
+      const newButtonContent = "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createCollab();'>New Collaboration Note</a>"+
+                              "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createNote();'>New Personal Note</a>"
+    </script>
+    <div class="bottom-nav">
+      <div class="bottom-nav-content">
+        <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="nav-btn"><img src="/images/icons/menu.png"></div></a>
+        <a href="javascript:void(0)" onclick="popupMessage(newButtonContent);"><div class="nav-btn"><img src="/images/icons/addnew.png"></div></a>
+      </div>
+    </div>
+
+  <%- include('./partials/sidebar') %>
+  <%- include('./partials/footer') %>
+  <script type="text/javascript" src="/javascripts/folder.js"></script>
+</body>
+</html>

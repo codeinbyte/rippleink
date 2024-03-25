@@ -1,0 +1,100 @@
+<div id="sidebar">
+  <div id="sidebar-nav">
+    <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="sidebar-back">Back</div></a>
+    <div class="sidebar-nav-content">
+      <div class="sidebar-search">
+        <input type="text" id="search-note" placeholder="Search note ...">
+        <span id="clear-search-input">&#x2715;</span>
+      </div>
+      <hr>
+      <div id="sidebar-search-container">
+      </div>
+      <div id="sidebar-content-container">
+        <div class="sidebar-folder">
+          <div class="sidebar-folder-title">
+            <a href="javascript:void(0)" onclick="toggleSidebarNotelist(0);" class="sidebar-folder-name" id="sidebar-folder-name-1">Collaboration Notes</a>
+            <a href="javascript:void(0)" onclick="popupMessage(newCollabNote);" class="sidebar-folder-more button-smaller"><img src='/images/icons/more-w.png'></a>
+          </div>
+          <ul id="sidebar-list-0">
+            <% if (typeof sharedCollab !== 'undefined' && sharedCollab && sharedCollab.length > 0) { %>
+              <% for (let shared of sharedCollab) { %>
+                <% if (typeof shared !== 'undefined') { %>
+                  <li>
+                    <div class="sidebar-note">
+                      <a href="/collab-page/<%= shared._id %>" class="sidebar-note-name" id="<%= shared._id %>"><%= shared.title %></a>
+                      <div class="sidebar-shared-by-other">shared</div>
+                    </div>
+                  </li>
+                <% } %>
+              <% } %>
+            <% } %>
+
+            <% if (typeof userCollab !== 'undefined' && userCollab && userCollab.length > 0) { %>
+              <% for (let collab of userCollab) { %>
+                <% if (typeof collab !== 'undefined') { %>
+                  <li>
+                    <div class="sidebar-note">
+                      <a href="/collab-page/<%= collab._id %>" class="sidebar-note-name" id="<%= collab._id %>"><%= collab.title %></a>
+                      <a href="javascript:void(0)"
+                      onclick="shareCollabNotePopupWindow('<%= collab._id %>');"
+                      class="sidebar-note-share button-smaller">
+                        <img src='/images/icons/share.png'>
+                      </a>
+                      <a href="javascript:void(0)"
+                      onclick="popupConfirmation('Delete Collaboration Note: <%= collab.title %>?', function() { deleteCollab('<%= collab._id %>'); });"
+                      class="sidebar-note-delete button-small">
+                        <img src='/images/icons/delete.png'>
+                      </a>
+                    </div>
+                  </li>
+                <% } %>
+              <% } %>
+            <% } %>
+          </ul>
+        </div>
+        <hr>
+        <div class="sidebar-folder">
+          <div class="sidebar-folder-title">
+            <a href="javascript:void(0)" onclick="toggleSidebarNotelist(1);" class="sidebar-folder-name" id="sidebar-folder-name-1">Personal Notes</a>
+            <a href="javascript:void(0)" onclick="popupMessage(newPersonalNote);" class="sidebar-folder-more button-smaller"><img src='/images/icons/more-w.png'></a>
+          </div>
+          <ul id="sidebar-list-1">
+            <% if (typeof userNotes !== 'undefined' && userNotes && userNotes.length > 0) { %>
+              <% for (let note of userNotes) { %>
+                <% if (typeof note !== 'undefined') { %>
+                  <li>
+                    <div class="sidebar-note">
+                      <a href="/note-page/<%= note._id %>" class="sidebar-note-name" id="<%= note._id %>"><%= note.title %></a>
+                      <a href="javascript:void(0)"
+                      onclick="sharePersonalNotePopupWindow('<%= note._id %>', `<%= (note.public_url) ? note.public_url : '' %>`);"
+                      class="sidebar-note-share button-smaller">
+                        <img src='/images/icons/share.png'>
+                      </a>
+                      <a href="javascript:void(0)"
+                      onclick="popupConfirmation('Delete Personal Note: <%= note.title %>?', function() { deleteNote('<%= note._id %>'); });"
+                      class="sidebar-note-delete button-small">
+                        <img src='/images/icons/delete.png'>
+                      </a>
+                    </div>
+                  </li>
+                <% } %>
+              <% } %>
+            <% } else { %>
+              You have no notes.
+            <% } %>
+
+          </ul>
+        </div>
+        <hr>
+      </div>
+    </div>
+  </div>
+  <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="sidebar-leftover"></div></a>
+</div>
+
+<script>
+  const newPersonalNote = "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createNote();' style='margin-top: 45px;'>New Personal Note</a>"
+  const newCollabNote = "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createCollab();' style='margin-top: 45px;'>New Collaboration Note</a>"
+  const newFolder = "<a class='link-btn link-btn-green' href='javascript:void(0)' onclick='createFolder();'>New Folder</a>"
+  const deleteFolderContent = "<a class='link-btn link-btn-red' href='javascript:void(0)' onclick='popupConfirmation(`ring myalert?`,myAlert)'>Delete Folder</a>"
+</script>

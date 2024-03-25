@@ -1,0 +1,71 @@
+<%- include('./partials/header') %>
+    <header>
+      <div class="header-content">
+        <a href="/auth-homepage" class="header-left-corner"><img src="/images/icons/back-button.png"></a>
+        <button id="drawBtn" onclick="drawToggle()">Typing Mode</button>
+        <button id="eraseBtn">Pen Mode</button>
+        <form action="/user/sign-out-user" method="POST">
+          <button type="submit" class="header-btn"><img src="/images/icons/logout.png"></button>
+        </form>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <% if (typeof message !== 'undefined' && message !== '') { %>
+        <div id="popup-notification" style="display: inline-block;" onclick="this.style.display='none'">
+          <span id="popup-close-button" onclick="this.parentElement.style.display='none'">X</span>
+          <%= message %>
+        </div>
+      <% } %>
+
+      <input type="hidden" id="collab_id" value="<%= collab_id %>">
+      <input type="hidden" id="text_content" value="<%= text_content %>">
+      <input type="hidden" id="drawing_event" value="0">
+      <input type="text" id="collab_title" placeholder="Title ..." value="<%= title %>">
+
+      <svg id="drawing-content">
+        <% if (drawing_content) { %>
+          <%- JSON.parse(drawing_content) %>
+        <% } %>
+      </svg>
+      <textarea id="froala-editor"></textarea>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-content">
+        <a href="javascript:void(0)" onclick="toggleSidebar();"><div class="nav-btn"><img src="/images/icons/menu.png"></div></a>
+        <a href="javascript:void(0)" onclick="toggleChatbar();"><div class="nav-btn"><img src="/images/icons/bubble-chat.png"></div></a>
+      </div>
+    </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // initialize socket.io client side
+    var socket = io({
+      auth: {
+        serverOffset: 0
+      },
+      ackTimeout: 10000,
+      query: {
+        collabId: '<%= collab_id %>'
+      },
+    });
+
+    let roomId = document.getElementById('collab_id').value;
+
+    // Execute as soon as socket connection is established
+    socket.on("connect", function() {
+      socket.emit("joinRoom", roomId);
+    });
+  </script>
+
+  <%- include('./partials/sidebar') %>
+  <%- include('./partials/chatbar') %>
+  <%- include('./partials/footer') %>
+  <script type="text/javascript" src="/froalajs"></script>
+  <script type="text/javascript" src="/froalajs_table"></script>
+  <script type="text/javascript" src="/froalajs_colors"></script>
+  <script type="text/javascript" src="/javascripts/collabPage.js"></script>
+</body>
+</html>
